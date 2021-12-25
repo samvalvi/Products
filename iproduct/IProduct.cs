@@ -11,6 +11,7 @@ namespace Products.iproduct
     {
         public List<Product> GetProducts();
         public Product SearchById(int productId);
+        public void InsertProduct(Product product);
         public void UpdateProduct(int productId);
         public void DeleteProduct(int productId);
     }

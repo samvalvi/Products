@@ -1,4 +1,5 @@
 ﻿using Products.dto;
+using Products.model;
 
 namespace Products
 {
@@ -6,9 +7,9 @@ namespace Products
     {
         static void Main(string[] args)
         {
-            ProductDTO product = new ProductDTO();
-            var result = product.SearchById(2);
-            Console.WriteLine(result);
+            Product product = new Product("Ketchup", 1000, 1200, 12);
+            ProductDTO dto = new ProductDTO();
+            dto.InsertProduct(product);
 
             
         }

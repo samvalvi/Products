@@ -14,6 +14,14 @@ namespace Products.model
         public double PublicPrice { get; set; }
         public int Stock { get; set; }
 
+        public Product(string productName, double specialPrice, double publicPrice, int stock)
+        {
+            this.ProductName = productName;
+            this.SpecialPrice = specialPrice;
+            this.PublicPrice = publicPrice;
+            this.Stock = stock;
+        }
+
         public Product(int productId, string productName, double specialPrice, double publicPrice, int stock)
         {
             this.ProductID = productId;

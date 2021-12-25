@@ -60,7 +60,32 @@ namespace Products.dto
 
             product = new Product(id, name, (double)specialPrice, (double)publicPrice, stock);
 
+            connection.CloseConnection();
             return product;
+        }
+
+        public void InsertProduct(Product product)
+        {
+            try
+            {
+                string sql_query = "INSERT INTO Producto(Nombre, PrecioEspecial, PrecioPublico, Stock) " +
+                    "VALUES(@productName, @specialPrice, @publicPrice, @stock)";
+
+                SqlConnection conn = connection.GetConnection();
+                SqlCommand cmd = new SqlCommand(sql_query, conn);
+                cmd.Parameters.AddWithValue("@productName", product.ProductName);
+                cmd.Parameters.AddWithValue("@specialPrice", product.SpecialPrice);
+                cmd.Parameters.AddWithValue("@publicPrice", product.PublicPrice);
+                cmd.Parameters.AddWithValue("@stock", product.Stock);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("Product added");
+                connection.CloseConnection();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public void UpdateProduct(int productId)
