@@ -44,23 +44,27 @@ namespace Products.dto
 
         public Product SearchById(int productId)
         {
-            string sql_query = $"SELECT ProductoID, Nombre, PrecioEspecial, PrecioPublico, Stock FROM Producto WHERE ProductoID = {productId}";
-            Product product;
+            string sql_query = "SELECT ProductoID, Nombre, PrecioEspecial, PrecioPublico, Stock FROM Producto WHERE ProductoID = @productId";
+            Product? product = null;
 
             SqlConnection conn = connection.GetConnection();
             SqlCommand cmd = new SqlCommand(sql_query, conn);
+            cmd.Parameters.AddWithValue("@productId", productId);
             SqlDataReader reader = cmd.ExecuteReader();
 
-            reader.Read();
-            int id = reader.GetInt32(0);
-            string name = reader.GetString(1);
-            decimal specialPrice = reader.GetDecimal(2);
-            decimal publicPrice = reader.GetDecimal(3);
-            int stock = reader.GetInt32(4);
+            while (reader.Read())
+            {
+                int id = reader.GetInt32(0);
+                string name = reader.GetString(1);
+                decimal specialPrice = reader.GetDecimal(2);
+                decimal publicPrice = reader.GetDecimal(3);
+                int stock = reader.GetInt32(4);
 
-            product = new Product(id, name, (double)specialPrice, (double)publicPrice, stock);
+                product = new Product(id, name, (double)specialPrice, (double)publicPrice, stock);
 
+            }
             connection.CloseConnection();
+            #pragma warning disable CS8603 // Posible tipo de valor devuelto de referencia nulo
             return product;
         }
 
@@ -80,20 +84,69 @@ namespace Products.dto
                 cmd.ExecuteNonQuery();
 
                 Console.WriteLine("Product added");
-                connection.CloseConnection();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+            finally
+            {
+                connection.CloseConnection();
+            }
         }
 
-        public void UpdateProduct(int productId)
+        public void UpdateProduct(Product product)
         {
+            try
+            {
+                string sql_query = "UPDATE Producto SET Nombre = @productName, PrecioEspecial = @specialPrice, " +
+                    "PrecioPublico = @publicPrice, Stock = @stock WHERE ProductoID = @productId";
+                SqlConnection conn = connection.GetConnection();
+                SqlCommand cmd = new SqlCommand(sql_query, conn);
+
+                cmd.Parameters.AddWithValue("@productName", product.ProductName);
+                cmd.Parameters.AddWithValue("@specialPrice", product.SpecialPrice);
+                cmd.Parameters.AddWithValue("@publicPrice", product.PublicPrice);
+                cmd.Parameters.AddWithValue("@stock", product.Stock);
+                cmd.Parameters.AddWithValue("@productId", product.ProductID);
+                cmd.ExecuteNonQuery();
+
+                Console.WriteLine("Product updated.");
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.CloseConnection();
+            }
         }
 
         public void DeleteProduct(int productId)
         {
+            try
+            {
+                string slq_query = "DELETE FROM Producto WHERE ProductoID = @productId";
+                SqlConnection conn = connection.GetConnection();
+                SqlCommand cmd = new SqlCommand(slq_query, conn);
+
+                cmd.Parameters.AddWithValue("@productId", productId);
+                cmd.ExecuteNonQuery ();
+
+                Console.WriteLine("Product deleted.");
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("Product doesn't exist");
+            }
+            finally
+            {
+                connection.CloseConnection();
+            }
         }
     }
 }
